@@ -31,6 +31,38 @@ def analizar(self):
                 while self.token_actual.lower() == "distinct":
                     self.coincidir("distinct")
                 if self.token_actual == "*":
+else:
+                    self.coincidir_id()
+                    if self.token_actual == ".":
+                        self.coincidir(".")
+                        self.coincidir_id()
+                    while self.token_actual == ",":
+                        self.coincidir(",")
+                        if self.token_actual.lower() == "distinct":
+                            self.coincidir("distinct")
+                        if self.token_actual == "*":
+                            self.coincidir("*")
+                        else:
+                            self.coincidir_id()
+                            if self.token_actual == ".":
+                                self.coincidir(".")
+                                self.coincidir_id()
+
+            # Salir del bucle si se encuentra la cláusula FROM
+            if self.token_actual.lower() == "from":
+                break
+            else:
+                raise ValueError(f"Error de sintaxis. Se esperaba 'FROM' pero se encontró '{self.token_actual}'.")
+
+        # Procesa la cláusula FROM y la parte restante de la consulta
+        self.coincidir("from")
+        self.coincidir_id()
+        while self.token_actual == ",":
+            self.coincidir(",")
+            self.coincidir_id()
+        self.coincidir("$")
+        print("La consulta es sintácticamente válida.")
+        self.pila.pop()
 
 
 
