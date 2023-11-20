@@ -19,3 +19,44 @@ class SQLParser:
             self.siguiente_token()
         else:
             raise ValueError(f"Error de sintaxis. Se esperaba '{token_esperado}' pero se encontró '{self.token_actual}'.")
+def analizar(self):
+        # Inicia el análisis sintáctico
+        self.siguiente_token()
+
+        while True:
+            # Manejo de la cláusula SELECT
+            if self.token_actual.lower() == "select":
+                self.pila.append("select")
+                self.siguiente_token()
+                while self.token_actual.lower() == "distinct":
+                    self.coincidir("distinct")
+                if self.token_actual == "*":
+
+
+
+
+
+
+
+
+def main():
+    while True:
+        # Solicita al usuario que introduzca una consulta SQL
+        consulta = input("Introduce una cadena SQL (o 'exit' para salir): ")
+
+        if consulta.lower() == 'exit':
+            break
+
+        consulta += ' $'  # Agrega el símbolo $ al final de la cadena
+        analizador = SQLParser(consulta)
+
+        try:
+            analizador.analizar()
+        except Exception as e:
+            # Captura y maneja cualquier error durante el análisis
+            print(f"Error al analizar la consulta: {e}")
+
+
+if __name__ == "__main__":
+    main()
+                    self.coincidir("*")
