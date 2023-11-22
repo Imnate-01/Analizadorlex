@@ -9,7 +9,7 @@ class Parser:
         if self.current_token == expected_token:
             self.advance()
         else:
-            raise SyntaxError(f"Error: Expected {expected_token}, but got {self.current_token}")
+            raise SyntaxError(f"Error: Se esperaba {expected_token}, pero se obtuvo {self.current_token}")
 
     def advance(self):
         if self.current_index < len(self.tokens):
@@ -19,210 +19,211 @@ class Parser:
             self.current_token = None
 
     def program(self):
-        self.declaration()
+        self.declaracion()
 
-    def declaration(self):
+    def declaracion(self):
         if self.current_token == "fun":
-            self.function()
+            self.funcion()
         elif self.current_token == "var":
-            self.var_declaration()
+            self.declaracion_var()
         elif self.current_token in ["for", "if", "print", "return", "while", "{", "true", "false", "null", "number", "string", "id", "("]:
-            self.statement()
+            self.sentencia()
         else:
             return
 
-        self.declaration()
+        self.declaracion()
 
-    def function(self):
+    def funcion(self):
         self.match("fun")
         self.match("id")
         self.match("(")
-        self.parameters()
+        self.parametros()
         self.match(")")
-        self.block()
+        self.bloque()
 
-    def parameters(self):
+    def parametros(self):
         if self.current_token != ")":
             self.match("id")
             while self.current_token == ",":
                 self.match(",")
                 self.match("id")
 
-    def block(self):
+    def bloque(self):
         self.match("{")
-        self.declaration()
+        self.declaracion()
         self.match("}")
 
-    def var_declaration(self):
+    def declaracion_var(self):
         self.match("var")
         self.match("id")
         if self.current_token == "=":
             self.match("=")
-            self.expression()
+            self.expresion()
 
         self.match(";")
 
-    def statement(self):
+    def sentencia(self):
         if self.current_token == "for":
-            self.for_statement()
+            self.sentencia_for()
         elif self.current_token == "if":
-            self.if_statement()
+            self.sentencia_if()
         elif self.current_token == "print":
-            self.print_statement()
+            self.sentencia_print()
         elif self.current_token == "return":
-            self.return_statement()
+            self.sentencia_return()
         elif self.current_token == "while":
-            self.while_statement()
+            self.sentencia_while()
         elif self.current_token == "{":
-            self.block()
+            self.bloque()
         else:
-            self.expression()
+            self.expresion()
             self.match(";")
 
-    def for_statement(self):
+    def sentencia_for(self):
         self.match("for")
         self.match("(")
-        self.for_stmt_1()
-        self.for_stmt_2()
-        self.for_stmt_3()
+        self.sentencia_for_1()
+        self.sentencia_for_2()
+        self.sentencia_for_3()
         self.match(")")
-        self.statement()
+        self.sentencia()
 
-    def for_stmt_1(self):
+    def sentencia_for_1(self):
         if self.current_token == "var":
-            self.var_declaration()
+            self.declaracion_var()
         elif self.current_token == ";":
             self.match(";")
         else:
-            self.expression()
+            self.expresion()
 
-    def for_stmt_2(self):
+    def sentencia_for_2(self):
         if self.current_token != ";":
-            self.expression()
+            self.expresion()
         self.match(";")
 
-    def for_stmt_3(self):
+    def sentencia_for_3(self):
         if self.current_token != ")":
-            self.expression()
+            self.expresion()
 
-    def if_statement(self):
+    def sentencia_if(self):
         self.match("if")
         self.match("(")
-        self.expression()
+        self.expresion()
         self.match(")")
-        self.statement()
-        self.else_statement()
+        self.sentencia()
+        self.sentencia_else()
 
-    def else_statement(self):
+    def sentencia_else(self):
         if self.current_token == "else":
             self.match("else")
-            self.statement()
+            self.sentencia()
 
-    def print_statement(self):
+    def sentencia_print(self):
         self.match("print")
-        self.expression()
+        self.expresion()
         self.match(";")
 
-    def return_statement(self):
+    def sentencia_return(self):
         self.match("return")
         if self.current_token != ";":
-            self.expression()
+            self.expresion()
         self.match(";")
 
-    def while_statement(self):
+    def sentencia_while(self):
         self.match("while")
         self.match("(")
-        self.expression()
+        self.expresion()
         self.match(")")
-        self.statement()
+        self.sentencia()
 
-    def expression(self):
-        self.assignment()
+    def expresion(self):
+        self.asignacion()
 
-    def assignment(self):
-        self.logic_or()
+    def asignacion(self):
+        self.logica_o()
         if self.current_token == "=":
             self.match("=")
-            self.expression()
+            self.expresion()
 
-    def logic_or(self):
-        self.logic_and()
+    def logica_o(self):
+        self.logica_y()
         while self.current_token == "or":
             self.match("or")
-            self.logic_and()
+            self.logica_y()
 
-    def logic_and(self):
-        self.equality()
+    def logica_y(self):
+        self.igualdad()
         while self.current_token == "and":
             self.match("and")
-            self.equality()
+            self.igualdad()
 
-    def equality(self):
-        self.comparison()
+    def igualdad(self):
+        self.comparacion()
         while self.current_token in ["==", "!="]:
             self.match(self.current_token)
-            self.comparison()
+            self.comparacion()
 
-    def comparison(self):
-        self.term()
+    def comparacion(self):
+        self.termino()
         while self.current_token in [">", ">=", "<", "<="]:
             self.match(self.current_token)
-            self.term()
+            self.termino()
 
-    def term(self):
+    def termino(self):
         self.factor()
         while self.current_token in ["+", "-"]:
             self.match(self.current_token)
             self.factor()
 
     def factor(self):
-        self.unary()
+        self.unario()
         while self.current_token in ["*", "/"]:
             self.match(self.current_token)
-            self.unary()
+            self.unario()
 
-    def unary(self):
+    def unario(self):
         if self.current_token in ["!", "-"]:
             self.match(self.current_token)
-            self.unary()
+            self.unario()
         else:
-            self.call()
+            self.llamada()
 
-    def call(self):
-        self.primary()
-        self.call_2()
+    def llamada(self):
+        self.principal()
+        self.llamada_2()
 
-    def call_2(self):
+    def llamada_2(self):
         if self.current_token == "(":
             self.match("(")
-            self.arguments_opc()
+            self.argumentos_opc()
             self.match(")")
-            self.call_2()
+            self.llamada_2()
 
-    def primary(self):
+    def principal(self):
         if self.current_token in ["true", "false", "null", "number", "string", "id"]:
             self.match(self.current_token)
         elif self.current_token == "(":
             self.match("(")
-            self.expression()
+            self.expresion()
             self.match(")")
         else:
-            raise SyntaxError("Error: Expected primary expression")
+            raise SyntaxError("Error: Se esperaba una expresión primaria")
 
-    def arguments_opc(self):
+    def argumentos_opc(self):
         if self.current_token != ")":
-            self.expression()
-            self.arguments()
+            self.expresion()
+            self.argumentos()
 
-    def arguments(self):
+    def argumentos(self):
         if self.current_token == ",":
             self.match(",")
-            self.expression()
-            self.arguments()
+            self.expresion()
+            self.argumentos()
 
 
+# Bucle principal
 while True:
-    input_string = input(">>>")
+    input_string = input(">>> ")
     if input_string.lower() == 'exit':
         break
 
